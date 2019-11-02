@@ -1,11 +1,10 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const apiRouter = require('./routers');
-const port = process.env.PORT || 3000;
+require('dotenv').config();
+const Telegraf = require('telegraf');
 
-let app = express();
-app.use(bodyParser.json());
-app.use('/', apiRouter);
-
-app.listen(port, () => console.log(`Server listening on port ${port}`));
+const bot = new Telegraf(process.env.BOT_TOKEN);
+bot.start((ctx) => ctx.reply('Welcome'));
+bot.help((ctx) => ctx.reply('Send me a sticker'));
+bot.on('sticker', (ctx) => ctx.reply('👍'));
+bot.hears('hi', (ctx) => ctx.reply('Hey there'));
+bot.launch();
 
