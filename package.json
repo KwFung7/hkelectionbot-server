@@ -1,0 +1,24 @@
+{
+  "name": "hkelectionbot-server",
+  "version": "1.0.0",
+  "description": "Nodejs server for HK Election Bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/KwFung7/hkelectionbot-server.git"
+  },
+  "author": "KwFxng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KwFung7/hkelectionbot-server/issues"
+  },
+  "homepage": "https://github.com/KwFung7/hkelectionbot-server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.7.7",
+    "telegraf": "^3.33.3"
+  }
+}
