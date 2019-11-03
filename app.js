@@ -47,7 +47,7 @@ bot.command('feedback', (ctx) => {
   displayFeedbackLink(ctx);
 });
 
-bot.help((ctx) => {
+bot.command('about', (ctx) => {
   displayContent(ctx, 'about');
 });
 
