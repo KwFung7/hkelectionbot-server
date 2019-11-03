@@ -14,7 +14,8 @@
   },
   "catalog": {
     "text": "請選擇政黨\uD83D\uDC47\uD83C\uDFFB",
-    "loadingText": "下載#parties#候選人中...",
+    "loadingText": "下載#parties#候選人資料中...",
+    "candidateSelectText": "請選擇候選人\uD83D\uDC47\uD83C\uDFFB",
     "parties": [
       "民主黨",
       "公民黨",
@@ -44,7 +45,8 @@
       "實政圓桌",
       "專業會議",
       "新思維",
-      "專業動力"
+      "專業動力",
+      "慈雲山建設力量"
     ]
   },
   "serverError": "抱歉，伺服器出現錯誤，請稍候再試\uD83D\uDE4F\uD83C\uDFFB"

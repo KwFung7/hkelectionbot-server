@@ -1,22 +1,25 @@
 const _ = require('lodash');
 const axios = require('axios');
 const querystring = require('querystring');
-const content = require('./content');
+const { candidate, serverError } = require('./content');
 
 /* ---- Helper ---- */
-const displayCandidateInfo = ({ reply }, keyword) => {
+const getCandidateList = (keyword) => {
   if (_.isEmpty(keyword)) {
     return;
   }
 
-  const { candidate } = content;
   const qs = querystring.stringify({ query: keyword });
-  axios.get(`${process.env.DATA_ENDPOINT}/persons/search?${qs}`)
-    .then((result) => {
+  return axios.get(`${process.env.DATA_ENDPOINT}/persons/search?${qs}`);
+};
 
-      const { data = [] } = result;
+const displayCandidateInfo = ({ reply }, keyword) => {
+  getCandidateList(keyword)
+    .then(({ data = [] }) => {
+
       if (!_.isEmpty(data)) {
 
+        reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', keyword));
         setTimeout(() => {
           _.forEach(data, (item) => {
             const text = candidate.text
@@ -29,16 +32,16 @@ const displayCandidateInfo = ({ reply }, keyword) => {
             reply(text);
           });
         }, 500);
-        reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', keyword));
       } else {
         reply(candidate.noResult);
       }
     })
     .catch(() => {
-      reply(content.serverError);
+      reply(serverError);
     });
 };
 
 module.exports = {
+  getCandidateList,
   displayCandidateInfo
 };
