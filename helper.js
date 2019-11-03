@@ -17,19 +17,21 @@ const displayCandidateInfo = ({ reply }, keyword) => {
       const { data = [] } = result;
       if (!_.isEmpty(data)) {
 
-        _.forEach(data, (item) => {
-          const text = candidate.text
-            .replace('#name#', item.name || candidate.noData)
-            .replace('#region#', item.region || candidate.noData)
-            .replace('#politicalAffiliation#', item.politicalAffiliation || candidate.noData)
-            .replace('#claim#', item.claim || candidate.noData)
-            .replace('#background#', item.background || candidate.noData)
-            .replace('#socialMedia#', item.socialMedia || candidate.noData);
-          reply(text);
-        });
-        reply(candidate.numResult.replace('#num#', data.length));
+        setTimeout(() => {
+          _.forEach(data, (item) => {
+            const text = candidate.text
+              .replace('#name#', item.name || candidate.noData)
+              .replace('#region#', item.region || candidate.noData)
+              .replace('#politicalAffiliation#', item.politicalAffiliation || candidate.noData)
+              .replace('#claim#', item.claim || candidate.noData)
+              .replace('#background#', item.background || candidate.noData)
+              .replace('#socialMedia#', item.socialMedia || candidate.noData);
+            reply(text);
+          });
+        }, 500);
+        reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', keyword));
       } else {
-        reply(candidate.numResult.replace('#num#', 0));
+        reply(candidate.noResult);
       }
     })
     .catch(() => {
