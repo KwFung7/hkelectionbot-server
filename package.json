@@ -18,6 +18,7 @@
   "homepage": "https://github.com/KwFung7/hkelectionbot-server#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
+    "lodash": "^4.17.15",
     "mongoose": "^5.7.7",
     "telegraf": "^3.33.3"
   }

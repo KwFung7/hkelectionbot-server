@@ -1,8 +1,11 @@
 let mongoose = require('../db-connect.js');
 const candidateSchema = require('../schemas/candidateSchema');
+const contentSchema = require('../schemas/contentSchema');
 
-const Candidate = mongoose.model('Candidate', candidateSchema);
+const Candidates = mongoose.model('Candidates', candidateSchema);
+const Contents = mongoose.model('Contents', contentSchema);
 
 module.exports = {
-    Candidate
+  Candidates,
+  Contents
 };
