@@ -1,0 +1,15 @@
+{
+  "welcomeMessage" : "直接輸入候選人名稱，政黨或地方以查閱更多🔎 (例如\"民主黨\"或\"荃灣\") \n\n /catalog - 按政黨搜尋 \n /district - 按地區搜尋 \n /help - 使用教學 \n /feedback - 意見回饋 \n /about - 關於Bot",
+  "feedback" : {
+    "text" : "透過連結前往Google Form填寫意見, 你的意見有助我們改進此Bot🙏🏻",
+    "buttonLabel" : "意見回饋",
+    "link" : "https://forms.gle/adodRj15vJq8om4EA"
+  },
+  "about" : "⚠所有資料來源自 hkfactcheck.io,並經過嚴謹FACK CHECKED⚠ \n如有任何錯誤, 請通過 /feedback功能通知admin \n\n開發者: @KwFxng",
+  "candidate" : {
+    "text" : "名稱: #name# \n地區: #region# \n政治派別: #politicalAffiliation# \n政治聯繫(報稱): #claim# \n背景: #background# \n社交媒體: #socialMedia#",
+    "noData" : "沒有提供資料",
+    "numResult" : "搜尋到#num#個符合結果"
+  },
+  "serverError": "抱歉, 伺服器出現錯誤, 請稍候再試\uD83D\uDE4F\uD83C\uDFFB"
+}

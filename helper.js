@@ -1,35 +1,42 @@
-const Extra = require('telegraf/extra');
 const _ = require('lodash');
-const { Contents } = require('./models');
-const SERVER_ERROR = '抱歉, 伺服器出現錯誤, 請稍候再試';
+const axios = require('axios');
+const querystring = require('querystring');
+const content = require('./content');
 
 /* ---- Helper ---- */
-const displayContent = ({ reply }, key) => {
-  Contents.find({})
-    .then((contents) => {
-      const content = _.head(contents);
-      reply(content[key]);
-    })
-    .catch(() => {
-      reply(SERVER_ERROR);
-    });
-};
+const displayCandidateInfo = ({ reply }, keyword) => {
+  if (_.isEmpty(keyword)) {
+    return;
+  }
 
-const displayFeedbackLink = ({ reply }) => {
-  Contents.find({})
-    .then((contents) => {
-      const feedback = _.head(contents).feedback;
-      reply(feedback.text, Extra.markup((m) =>
-        m.inlineKeyboard([
-          m.urlButton(feedback.buttonLabel, feedback.link),
-        ])))
+  const { candidate } = content;
+  const qs = querystring.stringify({ query: keyword });
+  axios.get(`${process.env.DATA_ENDPOINT}/persons/search?${qs}`)
+    .then((result) => {
+
+      const { data = [] } = result;
+      if (!_.isEmpty(data)) {
+
+        _.forEach(data, (item) => {
+          const text = candidate.text
+            .replace('#name#', item.name || candidate.noData)
+            .replace('#region#', item.region || candidate.noData)
+            .replace('#politicalAffiliation#', item.politicalAffiliation || candidate.noData)
+            .replace('#claim#', item.claim || candidate.noData)
+            .replace('#background#', item.background || candidate.noData)
+            .replace('#socialMedia#', item.socialMedia || candidate.noData);
+          reply(text);
+        });
+        reply(candidate.numResult.replace('#num#', data.length));
+      } else {
+        reply(candidate.numResult.replace('#num#', 0));
+      }
     })
     .catch(() => {
-      reply(SERVER_ERROR);
+      reply(content.serverError);
     });
 };
 
 module.exports = {
-  displayContent,
-  displayFeedbackLink
+  displayCandidateInfo
 };
