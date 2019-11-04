@@ -1,10 +1,20 @@
 require('dotenv').config();
+const express = require('express');
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
 const { displayCandidateInfo, getCandidateList } = require('./helper');
-const { catalog, feedback, welcomeMessage, about, serverError, candidate, district } = require('./content');
+const {
+  catalog,
+  feedback,
+  welcomeMessage,
+  about,
+  serverError,
+  candidate,
+  district
+} = require('./content');
 const _ = require('lodash');
 
+const app = express();
 const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.use(Telegraf.log());
 
@@ -136,5 +146,11 @@ bot.on('message', (ctx) => {
   displayCandidateInfo(ctx, ctx.message.text)
 });
 
-bot.launch();
+/* ---- Setup Webhook ---- */
+app.use(bot.webhookCallback('/'));
+bot.telegram.setWebhook(process.env.WEBHOOK_URL);
+
+app.listen(process.env.PORT, () => {
+  console.log(`Server listening on port ${process.env.PORT}`);
+});
 
