@@ -10,7 +10,7 @@
     "text": "名稱: #name# \n地區: #region# \n政治派別: #politicalAffiliation# \n政治聯繫(報稱): #claim# \n背景: #background# \n社交媒體: #socialMedia#",
     "noData": "沒有提供資料",
     "numResult": "搜尋到#num#個符合\"#keyword#\"的資料✅",
-    "noResult": "找不到資料❌"
+    "noResult": "找不到資料"
   },
   "catalog": {
     "text": "請選擇政黨\uD83D\uDC81\uD83C\uDFFB\u200D♂",
