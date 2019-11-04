@@ -2,7 +2,7 @@ require('dotenv').config();
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
 const { displayCandidateInfo, getCandidateList } = require('./helper');
-const { catalog, feedback, welcomeMessage, about, serverError, candidate } = require('./content');
+const { catalog, feedback, welcomeMessage, about, serverError, candidate, district } = require('./content');
 const _ = require('lodash');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -26,6 +26,18 @@ bot.command('catalog', ({ reply }) => {
 
     // Show 3 buttons each row
     return m.inlineKeyboard(_.chunk(partiesBtn, 3));
+  }));
+});
+
+bot.command('district', ({ reply }) => {
+  reply(district.text, Extra.markup((m) => {
+    // Create district buttons
+    const districtBtn = _.map(district.list, (item) => {
+      return m.callbackButton(item, `district-${item}`);
+    });
+
+    // Show 3 buttons each row
+    return m.inlineKeyboard(_.chunk(districtBtn, 3));
   }));
 });
 
@@ -69,6 +81,50 @@ bot.action(/catalog-(.+)/, ({ reply, match, answerCbQuery }) => {
     .catch(() => {
       reply(serverError);
     });
+});
+
+bot.action(/district-(.+)/, ({ reply, match, answerCbQuery }) => {
+  getCandidateList(match[1])
+    .then(({ data = [] }) => {
+
+      if (!_.isEmpty(data)) {
+
+        // Record region into list
+        let regionList = [];
+        _.forEach(data, (item) => {
+          const region = item.region.split('-')[2];
+          if (!_.includes(regionList, region)) {
+            regionList.push(region);
+          }
+        });
+
+        answerCbQuery(district.loadingText.replace('#district#', match[1]));
+        reply(candidate.numResult.replace('#num#', regionList.length).replace('#keyword#', match[1]));
+
+        setTimeout(() => {
+          reply(district.text, Extra.markup((m) => {
+            // Create region buttons
+            const districtBtn = _.map(regionList, (item) => {
+              return m.callbackButton(item, `region-${item}`);
+            });
+
+            // Show 3 buttons each row
+            return m.inlineKeyboard(_.chunk(districtBtn, 3));
+          }));
+        }, 1000);
+
+      } else {
+        reply(candidate.noResult);
+      }
+    })
+    .catch(() => {
+      replay(serverError);
+    });
+});
+
+bot.action(/region-(.+)/, (ctx) => {
+  displayCandidateInfo(ctx, ctx.match[1]);
+  return ctx.answerCbQuery(district.loadingText.replace('#district#', ctx.match[1]));
 });
 
 bot.action(/candidate-(.+)/, (ctx) => {

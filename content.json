@@ -5,7 +5,7 @@
     "buttonLabel": "意見回饋",
     "link": "https://forms.gle/adodRj15vJq8om4EA"
   },
-  "about": "❗所有資料來源自 hkfactcheck.io ，並經過嚴謹FACK CHECKED❗ \n如有任何錯誤，請通過 /feedback功能通知admin \n\n開發者: @KwFxng",
+  "about": "❗所有資料來源自 hkfactcheck.io ，並經過嚴謹FACK CHECKED❗ \n如有任何錯誤，請通過 /feedback功能通知admin \n\n開發者: @KwFxng \n版本: v1.0.0",
   "candidate": {
     "text": "名稱: #name# \n地區: #region# \n政治派別: #politicalAffiliation# \n政治聯繫(報稱): #claim# \n背景: #background# \n社交媒體: #socialMedia#",
     "noData": "沒有提供資料",
@@ -13,9 +13,9 @@
     "noResult": "找不到資料"
   },
   "catalog": {
-    "text": "請選擇政黨\uD83D\uDC47\uD83C\uDFFB",
+    "text": "請選擇政黨\uD83D\uDC81\uD83C\uDFFB\u200D♂",
     "loadingText": "下載#parties#候選人資料中...",
-    "candidateSelectText": "請選擇候選人\uD83D\uDC47\uD83C\uDFFB",
+    "candidateSelectText": "請選擇候選人\uD83D\uDC81\uD83C\uDFFB\u200D♂",
     "parties": [
       "民主黨",
       "公民黨",
@@ -47,6 +47,30 @@
       "新思維",
       "專業動力",
       "慈雲山建設力量"
+    ]
+  },
+  "district": {
+    "text": "請選擇地區\uD83D\uDC81\uD83C\uDFFB\u200D♂",
+    "loadingText": "下載#district#候選人資料中...",
+    "list": [
+      "荃灣區",
+      "屯門區",
+      "元朗區",
+      "葵青區",
+      "離島區",
+      "北區",
+      "大埔區",
+      "沙田區",
+      "西貢區",
+      "油尖旺區",
+      "深水埗區",
+      "九龍城區",
+      "黃大仙區",
+      "觀塘區",
+      "中西區",
+      "灣仔區",
+      "東區",
+      "南區"
     ]
   },
   "serverError": "抱歉，伺服器出現錯誤，請稍候再試\uD83D\uDE4F\uD83C\uDFFB"
