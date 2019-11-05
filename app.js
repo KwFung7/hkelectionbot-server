@@ -128,7 +128,7 @@ bot.action(/district-(.+)/, ({ reply, match, answerCbQuery }) => {
       }
     })
     .catch(() => {
-      replay(serverError);
+      reply(serverError);
     });
 
   return answerCbQuery(district.loadingText.replace('#district#', match[1]));

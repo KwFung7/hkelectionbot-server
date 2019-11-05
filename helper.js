@@ -13,15 +13,13 @@ const getCandidateList = (keyword) => {
   return axios.get(`${process.env.DATA_ENDPOINT}/persons/search?${qs}`);
 };
 
-const displayCandidateInfo = ({ reply }, keyword) => {
+const displayCandidateInfo = (ctx, keyword) => {
   getCandidateList(keyword)
     .then(({ data = [] }) => {
-      console.log('felix testing 1: ' + JSON.stringify(data, undefined, 2));
 
       if (!_.isEmpty(data)) {
-        console.log('felix testing 2: ' + JSON.stringify(data, undefined, 2));
 
-        reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', keyword));
+        ctx.reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', keyword));
         setTimeout(() => {
           _.forEach(data, (item) => {
             const text = candidate.text
@@ -31,16 +29,15 @@ const displayCandidateInfo = ({ reply }, keyword) => {
               .replace('#claim#', item.claim || candidate.noData)
               .replace('#background#', item.background || candidate.noData)
               .replace('#socialMedia#', item.socialMedia || candidate.noData);
-            reply(text);
+            ctx.reply(text);
           });
         }, 500);
       } else {
-        console.log('felix testing 3: ' + JSON.stringify(candidate.noResult, undefined, 2));
-        reply(candidate.noResult);
+        ctx.reply(candidate.noResult);
       }
     })
     .catch(() => {
-      reply(serverError);
+      ctx.reply(serverError);
     });
 };
 
