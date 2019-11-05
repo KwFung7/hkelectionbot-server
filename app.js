@@ -145,7 +145,7 @@ bot.action(/candidate-(.+)/, (ctx) => {
 });
 
 bot.on('text', (ctx) => {
-  ctx.webhookReply = true;
+  ctx.webhookReply = false;
   displayCandidateInfo(ctx, ctx.message.text);
 });
 
