@@ -13,6 +13,8 @@ const {
   district
 } = require('./content');
 const _ = require('lodash');
+const axios = require('axios');
+const querystring = require('querystring');
 
 const app = express();
 const bot = new Telegraf(process.env.BOT_TOKEN);
