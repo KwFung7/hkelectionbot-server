@@ -16,8 +16,10 @@ const getCandidateList = (keyword) => {
 const displayCandidateInfo = ({ reply }, keyword) => {
   getCandidateList(keyword)
     .then(({ data = [] }) => {
+      console.log('felix testing 1: ' + JSON.stringify(data, undefined, 2));
 
       if (!_.isEmpty(data)) {
+        console.log('felix testing 2: ' + JSON.stringify(data, undefined, 2));
 
         reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', keyword));
         setTimeout(() => {
@@ -33,6 +35,7 @@ const displayCandidateInfo = ({ reply }, keyword) => {
           });
         }, 500);
       } else {
+        console.log('felix testing 3: ' + JSON.stringify(candidate.noResult, undefined, 2));
         reply(candidate.noResult);
       }
     })

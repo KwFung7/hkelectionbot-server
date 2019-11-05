@@ -144,7 +144,7 @@ bot.action(/candidate-(.+)/, (ctx) => {
   return ctx.answerCbQuery(catalog.loadingText.replace('#parties#', ctx.match[1]));
 });
 
-bot.on('message', (ctx) => {
+bot.on('text', (ctx) => {
   displayCandidateInfo(ctx, ctx.message.text)
 });
 
