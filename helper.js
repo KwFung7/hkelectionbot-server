@@ -19,7 +19,10 @@ const displayCandidateInfo = (ctx, keyword) => {
 
       if (!_.isEmpty(data)) {
 
-        ctx.reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', keyword));
+        ctx.telegram.sendMessage(
+          ctx.message.chat.id,
+          candidate.numResult.replace('#num#', data.length).replace('#keyword#', keyword)
+        );
         setTimeout(() => {
           _.forEach(data, (item) => {
             const text = candidate.text
@@ -33,11 +36,11 @@ const displayCandidateInfo = (ctx, keyword) => {
           });
         }, 500);
       } else {
-        ctx.reply(candidate.noResult);
+        ctx.telegram.sendMessage(ctx.message.chat.id, candidate.noResult);
       }
     })
     .catch(() => {
-      ctx.reply(serverError);
+      ctx.telegram.sendMessage(ctx.message.chat.id, serverError);
     });
 };
 
