@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
-// const { displayCandidateInfo, getCandidateList } = require('./helper');
+const { displayCandidateInfo, getCandidateList } = require('./helper');
 const {
   catalog,
   feedback,
@@ -13,50 +13,10 @@ const {
   district
 } = require('./content');
 const _ = require('lodash');
-const axios = require('axios');
-const querystring = require('querystring');
 
 const app = express();
 const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.use(Telegraf.log());
-
-/* ---- Helper ---- */
-const getCandidateList = (keyword) => {
-  if (_.isEmpty(keyword)) {
-    return;
-  }
-
-  const qs = querystring.stringify({ query: keyword });
-  return axios.get(`${process.env.DATA_ENDPOINT}/persons/search?${qs}`);
-};
-
-const displayCandidateInfo = (ctx, keyword) => {
-  getCandidateList(keyword)
-    .then(({ data = [] }) => {
-
-      if (!_.isEmpty(data)) {
-
-        ctx.reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', keyword));
-        setTimeout(() => {
-          _.forEach(data, (item) => {
-            const text = candidate.text
-              .replace('#name#', item.name || candidate.noData)
-              .replace('#region#', item.region || candidate.noData)
-              .replace('#politicalAffiliation#', item.politicalAffiliation || candidate.noData)
-              .replace('#claim#', item.claim || candidate.noData)
-              .replace('#background#', item.background || candidate.noData)
-              .replace('#socialMedia#', item.socialMedia || candidate.noData);
-            ctx.reply(text);
-          });
-        }, 500);
-      } else {
-        ctx.reply(candidate.noResult);
-      }
-    })
-    .catch(() => {
-      ctx.reply(serverError);
-    });
-};
 
 /* ---- Telegraf Action ---- */
 bot.start(({ reply }) => {
@@ -185,6 +145,7 @@ bot.action(/candidate-(.+)/, (ctx) => {
 });
 
 bot.on('text', (ctx) => {
+  ctx.webhookReply = true;
   displayCandidateInfo(ctx, ctx.message.text);
 });
 
