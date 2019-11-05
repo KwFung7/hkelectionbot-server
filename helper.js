@@ -33,11 +33,11 @@ const displayCandidateInfo = (ctx, keyword) => {
           });
         }, 500);
       } else {
-        ctx.reply(candidate.noResult);
+        return ctx.reply(candidate.noResult);
       }
     })
     .catch(() => {
-      ctx.reply(serverError);
+      return ctx.reply(serverError);
     });
 };
 
