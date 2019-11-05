@@ -29,9 +29,9 @@ const displayCandidateInfo = (ctx, keyword) => {
               .replace('#claim#', item.claim || candidate.noData)
               .replace('#background#', item.background || candidate.noData)
               .replace('#socialMedia#', item.socialMedia || candidate.noData);
-            // ctx.reply(text);
+            ctx.reply(text);
           });
-        }, 500);
+        }, 1000);
       } else {
         ctx.reply(candidate.noResult);
       }
