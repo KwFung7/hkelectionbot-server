@@ -69,7 +69,6 @@ bot.action(/catalog-(.+)/, ({ reply, match, answerCbQuery }) => {
 
       if (!_.isEmpty(data)) {
 
-        answerCbQuery(catalog.loadingText.replace('#parties#', match[1]));
         reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', match[1]));
 
         setTimeout(() => {
@@ -91,6 +90,8 @@ bot.action(/catalog-(.+)/, ({ reply, match, answerCbQuery }) => {
     .catch(() => {
       reply(serverError);
     });
+
+  return answerCbQuery(catalog.loadingText.replace('#parties#', match[1]));
 });
 
 bot.action(/district-(.+)/, ({ reply, match, answerCbQuery }) => {
@@ -108,7 +109,6 @@ bot.action(/district-(.+)/, ({ reply, match, answerCbQuery }) => {
           }
         });
 
-        answerCbQuery(district.loadingText.replace('#district#', match[1]));
         reply(candidate.numResult.replace('#num#', regionList.length).replace('#keyword#', match[1]));
 
         setTimeout(() => {
@@ -130,6 +130,8 @@ bot.action(/district-(.+)/, ({ reply, match, answerCbQuery }) => {
     .catch(() => {
       replay(serverError);
     });
+
+  return answerCbQuery(district.loadingText.replace('#district#', match[1]));
 });
 
 bot.action(/region-(.+)/, (ctx) => {
