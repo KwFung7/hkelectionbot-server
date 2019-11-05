@@ -148,6 +148,10 @@ bot.on('text', (ctx) => {
   displayCandidateInfo(ctx, ctx.message.text);
 });
 
+bot.catch((err, ctx) => {
+  console.log(`Ooops, ecountered an error for ${ctx.updateType}`, err)
+});
+
 /* ---- Setup Webhook ---- */
 app.use(bot.webhookCallback('/'));
 bot.telegram.setWebhook(process.env.WEBHOOK_URL);

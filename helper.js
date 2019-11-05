@@ -31,7 +31,7 @@ const displayCandidateInfo = (ctx, keyword) => {
               .replace('#socialMedia#', item.socialMedia || candidate.noData);
             ctx.reply(text);
           });
-        }, 1000);
+        }, 500);
       } else {
         ctx.reply(candidate.noResult);
       }
