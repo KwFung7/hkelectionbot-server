@@ -29,15 +29,15 @@ const displayCandidateInfo = (ctx, keyword) => {
               .replace('#claim#', item.claim || candidate.noData)
               .replace('#background#', item.background || candidate.noData)
               .replace('#socialMedia#', item.socialMedia || candidate.noData);
-            ctx.reply(text);
+            // ctx.reply(text);
           });
         }, 500);
       } else {
-        return ctx.reply(candidate.noResult);
+        ctx.reply(candidate.noResult);
       }
     })
     .catch(() => {
-      return ctx.reply(serverError);
+      ctx.reply(serverError);
     });
 };
 
