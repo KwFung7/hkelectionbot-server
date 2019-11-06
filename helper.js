@@ -30,11 +30,34 @@ const getTagText = (tags) => {
   }
 };
 
+const getCandidateText = (originalText, data) => {
+  return originalText
+    .replace('#name#', data.name || candidate.noData)
+    .replace('#voteNumber#', data.voteNumber ? `(${data.voteNumber}號)` : '')
+    .replace('#region#', data.region || candidate.noData)
+    .replace('#politicalAffiliation#', data.politicalAffiliation || candidate.noData)
+    .replace('#politicalFaction#', getPoliticalFaction(data.politicalFaction))
+    .replace('#background#', data.background || candidate.noData)
+    .replace('#message#', data.message || candidate.noData)
+    .replace('#tags#', getTagText(data.tags))
+    .replace('#socialMedia#', data.socialMedia || candidate.noData)
+    .replace(/(<([^>]+)>)/ig, '');
+};
+
 const filterListWithTag = (list, tag) => {
   return _.filter(list, (item) => {
     return _.includes(item.tags, tag);
   });
 };
+
+const displayMultipleOptions = ({ reply, match }, list, text, markup) => {
+  reply(candidate.numResult.replace('#num#', list.length).replace('#keyword#', match[1]));
+
+  setTimeout(() => {
+    reply(text, markup);
+  }, 500);
+};
+
 const displayCandidateInfo = (ctx, keyword) => {
   getCandidateList(keyword)
     .then(({ data = [] }) => {
@@ -47,18 +70,7 @@ const displayCandidateInfo = (ctx, keyword) => {
         ctx.reply(candidate.numResult.replace('#num#', list.length).replace('#keyword#', keyword));
         setTimeout(() => {
           _.forEach(list, (item) => {
-
-            const text = candidate.text
-              .replace('#name#', item.name || candidate.noData)
-              .replace('#voteNumber#', item.voteNumber ? `(${item.voteNumber}號)` : '')
-              .replace('#region#', item.region || candidate.noData)
-              .replace('#politicalAffiliation#', item.politicalAffiliation || candidate.noData)
-              .replace('#politicalFaction#', getPoliticalFaction(item.politicalFaction))
-              .replace('#background#', item.background || candidate.noData)
-              .replace('#message#', item.message || candidate.noData)
-              .replace('#tags#', getTagText(item.tags))
-              .replace('#socialMedia#', item.socialMedia || candidate.noData)
-              .replace(/(<([^>]+)>)/ig, '');
+            const text = getCandidateText(candidate.text, item);
 
             if (!_.isEmpty(item.socialMedia) && !_.isEmpty(item.introLink)) {
               const socialMediaLink = item.socialMedia.includes(' ')
@@ -87,5 +99,6 @@ const displayCandidateInfo = (ctx, keyword) => {
 module.exports = {
   getCandidateList,
   filterListWithTag,
+  displayMultipleOptions,
   displayCandidateInfo
 };

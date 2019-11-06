@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
-const { displayCandidateInfo, getCandidateList, filterListWithTag } = require('./helper');
+const { displayCandidateInfo, getCandidateList, filterListWithTag, displayMultipleOptions } = require('./helper');
 const {
   catalog,
   feedback,
@@ -19,7 +19,8 @@ const app = express();
 const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.use(Telegraf.log());
 
-/* ---- Telegraf Action ---- */
+
+/* ---------------- Telegraf Action ---------------- */
 bot.start(({ reply }) => {
   reply(welcomeMessage);
 });
@@ -28,6 +29,8 @@ bot.help(({ reply }) => {
   reply(welcomeMessage);
 });
 
+
+/* ---- Bot Command ---- */
 bot.command('catalog', ({ reply }) => {
   reply(catalog.text, Extra.markup((m) => {
     // Create parties buttons
@@ -70,9 +73,11 @@ bot.command('about', ({ reply }) => {
   reply(about);
 });
 
-bot.action(/catalog-(.+)/, ({ reply, match, answerCbQuery }) => {
+
+/* ---- Bot Action ---- */
+bot.action(/catalog-(.+)/, (ctx) => {
   // Get candidate list with selected catalog
-  getCandidateList(match[1])
+  getCandidateList(ctx.match[1])
     .then(({ data = [] }) => {
 
       // Skip candidate who dont participate in election
@@ -80,33 +85,30 @@ bot.action(/catalog-(.+)/, ({ reply, match, answerCbQuery }) => {
 
       if (!_.isEmpty(list)) {
 
-        reply(candidate.numResult.replace('#num#', list.length).replace('#keyword#', match[1]));
+        const markup = Extra.markup((m) => {
+          const btn = _.map(list, (item) => {
+            const btnLabel = `${item.name}(${item.region.split('-')[1] || candidate.noData})`;
+            return m.callbackButton(btnLabel, `candidate-${item.name}`);
+          });
 
-        setTimeout(() => {
-          reply(catalog.candidateSelectText, Extra.markup((m) => {
-            // Create candidate buttons
-            const candidateBtn = _.map(list, (item) => {
-              const btnLabel = `${item.name}(${item.region.split('-')[1] || candidate.noData})`;
-              return m.callbackButton(btnLabel, `candidate-${item.name}`);
-            });
+          // Show 2 buttons each row
+          return m.inlineKeyboard(_.chunk(btn, 2));
+        });
+        displayMultipleOptions(ctx, list, catalog.candidateSelectText, markup);
 
-            // Show 2 buttons each row
-            return m.inlineKeyboard(_.chunk(candidateBtn, 2));
-          }));
-        }, 1000);
       } else {
-        reply(candidate.noResult);
+        ctx.reply(candidate.noResult);
       }
     })
     .catch(() => {
-      reply(serverError);
+      ctx.reply(serverError);
     });
 
-  return answerCbQuery(catalog.loadingText.replace('#parties#', match[1]));
+  return ctx.answerCbQuery(catalog.loadingText.replace('#parties#', ctx.match[1]));
 });
 
-bot.action(/district-(.+)/, ({ reply, match, answerCbQuery }) => {
-  getCandidateList(match[1])
+bot.action(/district-(.+)/, (ctx) => {
+  getCandidateList(ctx.match[1])
     .then(({ data = [] }) => {
 
       // Skip candidate who dont participate in election
@@ -123,29 +125,25 @@ bot.action(/district-(.+)/, ({ reply, match, answerCbQuery }) => {
           }
         });
 
-        reply(candidate.numResult.replace('#num#', regionList.length).replace('#keyword#', match[1]));
+        const markup = Extra.markup((m) => {
+          const btn = _.map(regionList, (item) => {
+            return m.callbackButton(item, `region-${item}`);
+          });
 
-        setTimeout(() => {
-          reply(district.text, Extra.markup((m) => {
-            // Create region buttons
-            const districtBtn = _.map(regionList, (item) => {
-              return m.callbackButton(item, `region-${item}`);
-            });
-
-            // Show 3 buttons each row
-            return m.inlineKeyboard(_.chunk(districtBtn, 3));
-          }));
-        }, 1000);
+          // Show 3 buttons each row
+          return m.inlineKeyboard(_.chunk(btn, 3));
+        });
+        displayMultipleOptions(ctx, regionList, district.text, markup);
 
       } else {
-        reply(candidate.noResult);
+        ctx.reply(candidate.noResult);
       }
     })
     .catch(() => {
-      reply(serverError);
+      ctx.reply(serverError);
     });
 
-  return answerCbQuery(district.loadingText.replace('#district#', match[1]));
+  return ctx.answerCbQuery(district.loadingText.replace('#district#', ctx.match[1]));
 });
 
 bot.action(/region-(.+)/, (ctx) => {
@@ -158,6 +156,7 @@ bot.action(/candidate-(.+)/, (ctx) => {
   return ctx.answerCbQuery(catalog.loadingText.replace('#parties#', ctx.match[1]));
 });
 
+/* ---- Bot listener ---- */
 bot.on('text', (ctx) => {
   ctx.webhookReply = false;
   displayCandidateInfo(ctx, ctx.message.text);
