@@ -10,7 +10,8 @@ const {
   about,
   serverError,
   candidate,
-  district
+  district,
+  report
 } = require('./content');
 const _ = require('lodash');
 
@@ -55,7 +56,14 @@ bot.command('feedback', ({ reply }) => {
   reply(feedback.text, Extra.markup((m) =>
     m.inlineKeyboard([
       m.urlButton(feedback.buttonLabel, feedback.link),
-    ])))
+    ])));
+});
+
+bot.command('report', ({ reply }) => {
+  reply(report.text, Extra.markup((m) =>
+    m.inlineKeyboard([
+      m.urlButton(report.buttonLabel, report.link),
+    ])));
 });
 
 bot.command('about', ({ reply }) => {

@@ -1,9 +1,14 @@
 {
-  "welcomeMessage": "直接輸入候選人名稱，政黨或地方以查閱更多🔎 (例如\"民主黨\"或\"荃灣\") \n\n /catalog - 按政黨搜尋 \n /district - 按地區搜尋 \n /help - 使用教學 \n /feedback - 意見回饋 \n /about - 關於Bot",
+  "welcomeMessage": "直接輸入候選人名稱，政黨或地方以查閱更多🔎 (例如\"民主黨\"或\"荃灣\") \n\n /catalog - 按政黨搜尋 \n /district - 按地區搜尋 \n /help - 使用教學 \n /report - 報料或協助更新資料 \n /feedback - 意見回饋 \n /about - 關於Bot",
   "feedback": {
     "text": "透過連結前往Google Form填寫意見，你的意見有助我們改進此Bot🙏🏻",
     "buttonLabel": "意見回饋",
     "link": "https://forms.gle/adodRj15vJq8om4EA"
+  },
+  "report": {
+    "text": "透過連結前往hkfactcheck.io報料或協助更新資料\uD83D\uDE4F\uD83C\uDFFB",
+    "buttonLabel": "前往hkfactcheck.io",
+    "link": "https://hkfactcheck.io/"
   },
   "about": "❗所有資料來源自 hkfactcheck.io ，並經過嚴謹FACK CHECKED❗ \n如有任何錯誤，請通過 /feedback功能通知admin \n\n開發者: @KwFxng \n版本: v1.0.0",
   "candidate": {
