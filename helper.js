@@ -3,6 +3,8 @@ const _ = require('lodash');
 const axios = require('axios');
 const querystring = require('querystring');
 const { candidate, serverError } = require('./content');
+const MAX_SHOW_CANDIDATE = 3;
+const DISPLAY_TIMEOUT = 500;
 
 /* ---- Helper ---- */
 const getCandidateList = (keyword) => {
@@ -50,12 +52,14 @@ const filterListWithTag = (list, tag) => {
   });
 };
 
-const displayMultipleOptions = ({ reply, match }, list, text, markup) => {
-  reply(candidate.numResult.replace('#num#', list.length).replace('#keyword#', match[1]));
+const displayMultipleOptions = ({ reply, match }, list, text, markup, keyword) => {
+  reply(candidate.numResult
+    .replace('#num#', list.length)
+    .replace('#keyword#', match ? match[1] : keyword));
 
   setTimeout(() => {
     reply(text, markup);
-  }, 500);
+  }, DISPLAY_TIMEOUT);
 };
 
 const displayCandidateInfo = (ctx, keyword) => {
@@ -67,26 +71,41 @@ const displayCandidateInfo = (ctx, keyword) => {
 
       if (!_.isEmpty(list)) {
 
-        ctx.reply(candidate.numResult.replace('#num#', list.length).replace('#keyword#', keyword));
-        setTimeout(() => {
-          _.forEach(list, (item) => {
-            const text = getCandidateText(candidate.text, item);
+        if (list.length > MAX_SHOW_CANDIDATE) {
+          // Display candidate name only when there is too many result
+          const markup = Extra.markup((m) => {
+            const btn = _.map(list, (item) => {
+              const btnLabel = `${item.name}(${item.region.split('-')[1] || candidate.noData})`;
+              return m.callbackButton(btnLabel, `candidate-${item.name}`);
+            });
 
-            if (!_.isEmpty(item.socialMedia) && !_.isEmpty(item.introLink)) {
-              const socialMediaLink = item.socialMedia.includes(' ')
-                ? candidate.facebookSearchLink.replace('#query#', item.name)
-                : item.socialMedia;
-
-              ctx.reply(text, Extra.markup((m) =>
-                m.inlineKeyboard([
-                  m.urlButton(candidate.introLinkLabel, item.introLink),
-                  m.urlButton(candidate.socialMediaLabel, socialMediaLink)
-                ])));
-            } else {
-              ctx.reply(text);
-            }
+            // Show 2 buttons each row
+            return m.inlineKeyboard(_.chunk(btn, 2));
           });
-        }, 500);
+          displayMultipleOptions(ctx, list, candidate.candidateSelectText, markup, keyword);
+
+        } else {
+          ctx.reply(candidate.numResult.replace('#num#', list.length).replace('#keyword#', keyword));
+          setTimeout(() => {
+            _.forEach(list, (item) => {
+              const text = getCandidateText(candidate.text, item);
+
+              if (!_.isEmpty(item.socialMedia) && !_.isEmpty(item.introLink)) {
+                const socialMediaLink = item.socialMedia.includes(' ')
+                  ? candidate.facebookSearchLink.replace('#query#', item.name)
+                  : item.socialMedia;
+
+                ctx.reply(text, Extra.markup((m) =>
+                  m.inlineKeyboard([
+                    m.urlButton(candidate.introLinkLabel, item.introLink),
+                    m.urlButton(candidate.socialMediaLabel, socialMediaLink)
+                  ])));
+              } else {
+                ctx.reply(text);
+              }
+            });
+          }, DISPLAY_TIMEOUT);
+        }
       } else {
         ctx.reply(candidate.noResult);
       }
