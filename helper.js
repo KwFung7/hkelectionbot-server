@@ -14,28 +14,49 @@ const getCandidateList = (keyword) => {
   return axios.get(`${process.env.DATA_ENDPOINT}/persons/search?${qs}`);
 };
 
+const getPoliticalFaction = (faction) => {
+  if (faction === 'PANDEMO' || faction === 'PROESTAB') {
+    return candidate.politicalFaction[faction];
+  } else {
+    return candidate.politicalFaction['OTHER'];
+  }
+};
+
+const getTagText = (tags) => {
+  if (!_.isEmpty(tags)) {
+    return _.map(tags, tag => `#${tag}`).join(', ');
+  } else {
+    return candidate.noData;
+  }
+};
+
+const filterListWithTag = (list, tag) => {
+  return _.filter(list, (item) => {
+    return _.includes(item.tags, tag);
+  });
+};
 const displayCandidateInfo = (ctx, keyword) => {
   getCandidateList(keyword)
     .then(({ data = [] }) => {
 
-      if (!_.isEmpty(data)) {
+      // Skip candidate who dont participate in election
+      const list = filterListWithTag(data, '正式參選');
 
-        ctx.reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', keyword));
+      if (!_.isEmpty(list)) {
+
+        ctx.reply(candidate.numResult.replace('#num#', list.length).replace('#keyword#', keyword));
         setTimeout(() => {
-          _.forEach(data, (item) => {
-            let tags;
-            if (!_.isEmpty(item.tags)) {
-              tags = _.map(item.tags, tag => `#${tag}`).join(', ');
-            }
+          _.forEach(list, (item) => {
+
             const text = candidate.text
               .replace('#name#', item.name || candidate.noData)
               .replace('#voteNumber#', item.voteNumber ? `(${item.voteNumber}號)` : '')
               .replace('#region#', item.region || candidate.noData)
               .replace('#politicalAffiliation#', item.politicalAffiliation || candidate.noData)
-              .replace('#claim#', item.claim || candidate.noData)
+              .replace('#politicalFaction#', getPoliticalFaction(item.politicalFaction))
               .replace('#background#', item.background || candidate.noData)
               .replace('#message#', item.message || candidate.noData)
-              .replace('#tags#', tags || candidate.noData)
+              .replace('#tags#', getTagText(item.tags))
               .replace('#socialMedia#', item.socialMedia || candidate.noData)
               .replace(/(<([^>]+)>)/ig, '');
 
@@ -65,5 +86,6 @@ const displayCandidateInfo = (ctx, keyword) => {
 
 module.exports = {
   getCandidateList,
+  filterListWithTag,
   displayCandidateInfo
 };

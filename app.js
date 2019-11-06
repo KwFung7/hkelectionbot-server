@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
-const { displayCandidateInfo, getCandidateList } = require('./helper');
+const { displayCandidateInfo, getCandidateList, filterListWithTag } = require('./helper');
 const {
   catalog,
   feedback,
@@ -75,14 +75,17 @@ bot.action(/catalog-(.+)/, ({ reply, match, answerCbQuery }) => {
   getCandidateList(match[1])
     .then(({ data = [] }) => {
 
-      if (!_.isEmpty(data)) {
+      // Skip candidate who dont participate in election
+      const list = filterListWithTag(data, '正式參選');
 
-        reply(candidate.numResult.replace('#num#', data.length).replace('#keyword#', match[1]));
+      if (!_.isEmpty(list)) {
+
+        reply(candidate.numResult.replace('#num#', list.length).replace('#keyword#', match[1]));
 
         setTimeout(() => {
           reply(catalog.candidateSelectText, Extra.markup((m) => {
             // Create candidate buttons
-            const candidateBtn = _.map(data, (item) => {
+            const candidateBtn = _.map(list, (item) => {
               const btnLabel = `${item.name}(${item.region.split('-')[1] || candidate.noData})`;
               return m.callbackButton(btnLabel, `candidate-${item.name}`);
             });
@@ -106,11 +109,14 @@ bot.action(/district-(.+)/, ({ reply, match, answerCbQuery }) => {
   getCandidateList(match[1])
     .then(({ data = [] }) => {
 
-      if (!_.isEmpty(data)) {
+      // Skip candidate who dont participate in election
+      const list = filterListWithTag(data, '正式參選');
+
+      if (!_.isEmpty(list)) {
 
         // Record region into list
         let regionList = [];
-        _.forEach(data, (item) => {
+        _.forEach(list, (item) => {
           const region = item.region.split('-')[2];
           if (!_.includes(regionList, region)) {
             regionList.push(region);

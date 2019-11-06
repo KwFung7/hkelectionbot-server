@@ -12,12 +12,17 @@
   },
   "about": "❗所有資料來源自 hkfactcheck.io ，並經過嚴謹FACK CHECKED❗ \n如有任何錯誤，請通過 /feedback功能通知admin \n\n開發者: @KwFxng \n版本: v1.0.0",
   "candidate": {
-    "text": "名稱: #name# #voteNumber# \n地區: #region# \n政治派別: #politicalAffiliation# \n政治聯繫(報稱): #claim# \n\n背景: #background# \n候選人政綱: #message# \n\n標籤: #tags# \n社交媒體: #socialMedia#\n\n",
+    "text": "名稱: #name# #voteNumber# \n地區: #region# \n派系: #politicalFaction# \n報稱政治聯繫: #politicalAffiliation# \n\n背景: #background# \n候選人政綱: #message# \n\n標籤: #tags# \n社交媒體: #socialMedia#\n\n",
     "noData": "沒有提供資料",
     "numResult": "搜尋到#num#個符合\"#keyword#\"的資料✅",
     "noResult": "找不到資料\uD83D\uDEAB",
     "introLinkLabel": "選舉事務處連結",
     "socialMediaLabel": "社交媒體",
+    "politicalFaction": {
+      "PANDEMO": "民主派\uD83D\uDD38",
+      "PROESTAB": "建制派\uD83D\uDD39",
+      "OTHER": "其他/未清楚"
+    },
     "facebookSearchLink": "https://www.facebook.com/search/top/?q=#query#"
   },
   "catalog": {
