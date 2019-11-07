@@ -10,13 +10,19 @@ const DISPLAY_TIMEOUT = 500;
 const PARTCIPANT_TAG = '正式參選';
 
 /* ---- Helper ---- */
-const getCandidateList = (keyword) => {
+const getCandidateList = (keyword, isRegion) => {
   if (_.isEmpty(keyword)) {
     return;
   }
 
-  const qs = querystring.stringify({ query: keyword });
-  return axios.get(`${process.env.DATA_ENDPOINT}/persons/search?${qs}`);
+  if (isRegion) {
+    const qs = querystring.stringify({ region: keyword });
+    return axios.get(`${process.env.DATA_ENDPOINT}/persons?${qs}`);
+
+  } else {
+    const qs = querystring.stringify({ query: keyword });
+    return axios.get(`${process.env.DATA_ENDPOINT}/persons/search?${qs}`);
+  }
 };
 
 const getPoliticalFaction = (faction) => {
@@ -55,18 +61,18 @@ const filterListWithTag = (list, tag) => {
   });
 };
 
-const displayMultipleOptions = ({ reply, match }, list, text, markup, keyword) => {
+const displayMultipleOptions = ({ reply }, list, text, markup, keyword) => {
   reply(candidate.numResult
     .replace('#num#', list.length)
-    .replace('#keyword#', match ? match[1] : keyword));
+    .replace('#keyword#', keyword));
 
   setTimeout(() => {
     reply(text, markup);
   }, DISPLAY_TIMEOUT);
 };
 
-const displayCandidateInfo = (ctx, keyword) => {
-  getCandidateList(keyword)
+const displayCandidateInfo = (ctx, keyword, isRegion) => {
+  getCandidateList(keyword, isRegion)
     .then(({ data = [] }) => {
 
       // Skip candidate who dont participate in election
@@ -74,6 +80,7 @@ const displayCandidateInfo = (ctx, keyword) => {
 
       if (!_.isEmpty(list)) {
 
+        const text = ctx.match ? isRegion ? ctx.match[1].split('-')[2] : ctx.match[1] : keyword;
         if (list.length > MAX_SHOW_CANDIDATE) {
           // Display candidate name only when there is too many result
           const markup = Extra.markup((m) => {
@@ -85,10 +92,10 @@ const displayCandidateInfo = (ctx, keyword) => {
             // Show 2 buttons each row
             return m.inlineKeyboard(_.chunk(btn, 2));
           });
-          displayMultipleOptions(ctx, list, candidate.candidateSelectText, markup, keyword);
+          displayMultipleOptions(ctx, list, candidate.candidateSelectText, markup, text);
 
         } else {
-          ctx.reply(candidate.numResult.replace('#num#', list.length).replace('#keyword#', keyword));
+          ctx.reply(candidate.numResult.replace('#num#', list.length).replace('#keyword#', text));
           setTimeout(() => {
             _.forEach(list, (item) => {
               const text = getCandidateText(candidate.text, item);
@@ -119,7 +126,7 @@ const displayCandidateInfo = (ctx, keyword) => {
 };
 
 const displayCatalogInfo = (ctx) => {
-  getCandidateList(ctx.match[1])
+  getCandidateList(ctx.match[1], false)
     .then(({ data = [] }) => {
 
       // Skip candidate who dont participate in election
@@ -136,7 +143,7 @@ const displayCatalogInfo = (ctx) => {
           // Show 2 buttons each row
           return m.inlineKeyboard(_.chunk(btn, 2));
         });
-        displayMultipleOptions(ctx, list, catalog.candidateSelectText, markup);
+        displayMultipleOptions(ctx, list, catalog.candidateSelectText, markup, ctx.match[1]);
 
       } else {
         ctx.reply(candidate.noResult);
@@ -150,7 +157,7 @@ const displayCatalogInfo = (ctx) => {
 };
 
 const displayDistrictInfo = (ctx) => {
-  getCandidateList(ctx.match[1])
+  getCandidateList(ctx.match[1], true)
     .then(({ data = [] }) => {
 
       // Skip candidate who dont participate in election
@@ -169,13 +176,13 @@ const displayDistrictInfo = (ctx) => {
 
         const markup = Extra.markup((m) => {
           const btn = _.map(regionList, (item) => {
-            return m.callbackButton(item, `region-${item}`);
+            return m.callbackButton(item, `region-${ctx.match[1]}-${item}`);
           });
 
           // Show 3 buttons each row
           return m.inlineKeyboard(_.chunk(btn, 3));
         });
-        displayMultipleOptions(ctx, regionList, district.text, markup);
+        displayMultipleOptions(ctx, regionList, district.text, markup, ctx.match[1].split('-')[1]);
 
       } else {
         ctx.reply(candidate.noResult);

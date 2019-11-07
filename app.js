@@ -45,7 +45,7 @@ bot.command('district', ({ reply }) => {
   reply(district.text, Extra.markup((m) => {
     // Create district buttons
     const districtBtn = _.map(district.list, (item) => {
-      return m.callbackButton(item, `district-${item}`);
+      return m.callbackButton(item.split('-')[1], `district-${item}`);
     });
 
     // Show 3 buttons each row
@@ -79,7 +79,7 @@ bot.action(/catalog-(.+)/, (ctx) => {
 });
 
 bot.action(/candidate-(.+)/, (ctx) => {
-  displayCandidateInfo(ctx, ctx.match[1]);
+  displayCandidateInfo(ctx, ctx.match[1], false);
   return ctx.answerCbQuery(catalog.loadingText.replace('#parties#', ctx.match[1]));
 });
 
@@ -88,15 +88,15 @@ bot.action(/district-(.+)/, (ctx) => {
 });
 
 bot.action(/region-(.+)/, (ctx) => {
-  displayCandidateInfo(ctx, ctx.match[1]);
-  return ctx.answerCbQuery(district.loadingText.replace('#district#', ctx.match[1]));
+  displayCandidateInfo(ctx, ctx.match[1], true);
+  return ctx.answerCbQuery(district.loadingText.replace('#district#', ctx.match[1].split('-')[2]));
 });
 
 
 /* ---- Bot listener ---- */
 bot.on('text', (ctx) => {
   ctx.webhookReply = false;
-  displayCandidateInfo(ctx, ctx.message.text);
+  displayCandidateInfo(ctx, ctx.message.text, false);
 });
 
 bot.catch((err, ctx) => {
