@@ -2,16 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
-const { displayCandidateInfo, getCandidateList, filterListWithTag, displayMultipleOptions } = require('./helper');
+const { displayCandidateInfo, displayCatalogInfo, displayDistrictInfo } = require('./helper');
 const {
-  catalog,
-  feedback,
   welcomeMessage,
-  about,
-  serverError,
-  candidate,
+  catalog,
   district,
-  report
+  report,
+  feedback,
+  about
 } = require('./content');
 const _ = require('lodash');
 
@@ -77,73 +75,16 @@ bot.command('about', ({ reply }) => {
 /* ---- Bot Action ---- */
 bot.action(/catalog-(.+)/, (ctx) => {
   // Get candidate list with selected catalog
-  getCandidateList(ctx.match[1])
-    .then(({ data = [] }) => {
+  displayCatalogInfo(ctx);
+});
 
-      // Skip candidate who dont participate in election
-      const list = filterListWithTag(data, '正式參選');
-
-      if (!_.isEmpty(list)) {
-
-        const markup = Extra.markup((m) => {
-          const btn = _.map(list, (item) => {
-            const btnLabel = `${item.name}(${item.region.split('-')[1] || candidate.noData})`;
-            return m.callbackButton(btnLabel, `candidate-${item.name}`);
-          });
-
-          // Show 2 buttons each row
-          return m.inlineKeyboard(_.chunk(btn, 2));
-        });
-        displayMultipleOptions(ctx, list, catalog.candidateSelectText, markup);
-
-      } else {
-        ctx.reply(candidate.noResult);
-      }
-    })
-    .catch(() => {
-      ctx.reply(serverError);
-    });
-
+bot.action(/candidate-(.+)/, (ctx) => {
+  displayCandidateInfo(ctx, ctx.match[1]);
   return ctx.answerCbQuery(catalog.loadingText.replace('#parties#', ctx.match[1]));
 });
 
 bot.action(/district-(.+)/, (ctx) => {
-  getCandidateList(ctx.match[1])
-    .then(({ data = [] }) => {
-
-      // Skip candidate who dont participate in election
-      const list = filterListWithTag(data, '正式參選');
-
-      if (!_.isEmpty(list)) {
-
-        // Record region into list
-        let regionList = [];
-        _.forEach(list, (item) => {
-          const region = item.region.split('-')[2];
-          if (!_.includes(regionList, region)) {
-            regionList.push(region);
-          }
-        });
-
-        const markup = Extra.markup((m) => {
-          const btn = _.map(regionList, (item) => {
-            return m.callbackButton(item, `region-${item}`);
-          });
-
-          // Show 3 buttons each row
-          return m.inlineKeyboard(_.chunk(btn, 3));
-        });
-        displayMultipleOptions(ctx, regionList, district.text, markup);
-
-      } else {
-        ctx.reply(candidate.noResult);
-      }
-    })
-    .catch(() => {
-      ctx.reply(serverError);
-    });
-
-  return ctx.answerCbQuery(district.loadingText.replace('#district#', ctx.match[1]));
+  displayDistrictInfo(ctx);
 });
 
 bot.action(/region-(.+)/, (ctx) => {
@@ -151,10 +92,6 @@ bot.action(/region-(.+)/, (ctx) => {
   return ctx.answerCbQuery(district.loadingText.replace('#district#', ctx.match[1]));
 });
 
-bot.action(/candidate-(.+)/, (ctx) => {
-  displayCandidateInfo(ctx, ctx.match[1]);
-  return ctx.answerCbQuery(catalog.loadingText.replace('#parties#', ctx.match[1]));
-});
 
 /* ---- Bot listener ---- */
 bot.on('text', (ctx) => {
@@ -167,10 +104,12 @@ bot.catch((err, ctx) => {
 });
 
 /* ---- Setup Webhook ---- */
-app.use(bot.webhookCallback('/'));
-bot.telegram.setWebhook(process.env.WEBHOOK_URL);
+// app.use(bot.webhookCallback('/'));
+// bot.telegram.setWebhook(process.env.WEBHOOK_URL);
+//
+// app.listen(process.env.PORT, () => {
+//   console.log(`Server listening on port ${process.env.PORT}`);
+// });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server listening on port ${process.env.PORT}`);
-});
+bot.launch();
 

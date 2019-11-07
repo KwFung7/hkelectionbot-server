@@ -2,9 +2,12 @@ const Extra = require('telegraf/extra');
 const _ = require('lodash');
 const axios = require('axios');
 const querystring = require('querystring');
-const { candidate, serverError } = require('./content');
+const { candidate, catalog, district, serverError } = require('./content');
+
+/* ---- Constants ---- */
 const MAX_SHOW_CANDIDATE = 3;
 const DISPLAY_TIMEOUT = 500;
+const PARTCIPANT_TAG = '正式參選';
 
 /* ---- Helper ---- */
 const getCandidateList = (keyword) => {
@@ -67,7 +70,7 @@ const displayCandidateInfo = (ctx, keyword) => {
     .then(({ data = [] }) => {
 
       // Skip candidate who dont participate in election
-      const list = filterListWithTag(data, '正式參選');
+      const list = filterListWithTag(data, PARTCIPANT_TAG);
 
       if (!_.isEmpty(list)) {
 
@@ -115,9 +118,78 @@ const displayCandidateInfo = (ctx, keyword) => {
     });
 };
 
+const displayCatalogInfo = (ctx) => {
+  getCandidateList(ctx.match[1])
+    .then(({ data = [] }) => {
+
+      // Skip candidate who dont participate in election
+      const list = filterListWithTag(data, PARTCIPANT_TAG);
+
+      if (!_.isEmpty(list)) {
+
+        const markup = Extra.markup((m) => {
+          const btn = _.map(list, (item) => {
+            const btnLabel = `${item.name}(${item.region.split('-')[1] || candidate.noData})`;
+            return m.callbackButton(btnLabel, `candidate-${item.name}`);
+          });
+
+          // Show 2 buttons each row
+          return m.inlineKeyboard(_.chunk(btn, 2));
+        });
+        displayMultipleOptions(ctx, list, catalog.candidateSelectText, markup);
+
+      } else {
+        ctx.reply(candidate.noResult);
+      }
+    })
+    .catch(() => {
+      ctx.reply(serverError);
+    });
+
+  return ctx.answerCbQuery(catalog.loadingText.replace('#parties#', ctx.match[1]));
+};
+
+const displayDistrictInfo = (ctx) => {
+  getCandidateList(ctx.match[1])
+    .then(({ data = [] }) => {
+
+      // Skip candidate who dont participate in election
+      const list = filterListWithTag(data, PARTCIPANT_TAG);
+
+      if (!_.isEmpty(list)) {
+
+        // Record region into list
+        let regionList = [];
+        _.forEach(list, (item) => {
+          const region = item.region.split('-')[2];
+          if (!_.includes(regionList, region)) {
+            regionList.push(region);
+          }
+        });
+
+        const markup = Extra.markup((m) => {
+          const btn = _.map(regionList, (item) => {
+            return m.callbackButton(item, `region-${item}`);
+          });
+
+          // Show 3 buttons each row
+          return m.inlineKeyboard(_.chunk(btn, 3));
+        });
+        displayMultipleOptions(ctx, regionList, district.text, markup);
+
+      } else {
+        ctx.reply(candidate.noResult);
+      }
+    })
+    .catch(() => {
+      ctx.reply(serverError);
+    });
+
+  return ctx.answerCbQuery(district.loadingText.replace('#district#', ctx.match[1]));
+};
+
 module.exports = {
-  getCandidateList,
-  filterListWithTag,
-  displayMultipleOptions,
-  displayCandidateInfo
+  displayCandidateInfo,
+  displayCatalogInfo,
+  displayDistrictInfo
 };
