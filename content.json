@@ -10,7 +10,7 @@
     "buttonLabel": "前往hkfactcheck.io",
     "link": "https://hkfactcheck.io/"
   },
-  "about": "❗所有資料來源自 hkfactcheck.io ，並經過嚴謹FACK CHECKED❗ \n如有任何錯誤，請通過 /feedback功能通知admin \n\n開發者: @KwFxng \n版本: v1.0.0",
+  "about": "❗所有資料來源自 hkfactcheck.io ，並經過嚴謹FACK CHECKED❗ \n如有任何錯誤，請通過 /feedback功能通知admin \n\n開發者: @KxFxxg \n版本: v1.0.0",
   "candidate": {
     "text": "名稱: #name# #voteNumber# \n地區: #region# \n派系: #politicalFaction# \n報稱政治聯繫: #politicalAffiliation# \n\n背景: #background# \n候選人政綱: #message# \n\n標籤: #tags# \n社交媒體: #socialMedia#\n\n",
     "noData": "沒有提供資料",
