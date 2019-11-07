@@ -104,12 +104,12 @@ bot.catch((err, ctx) => {
 });
 
 /* ---- Setup Webhook ---- */
-// app.use(bot.webhookCallback('/'));
-// bot.telegram.setWebhook(process.env.WEBHOOK_URL);
-//
-// app.listen(process.env.PORT, () => {
-//   console.log(`Server listening on port ${process.env.PORT}`);
-// });
+app.use(bot.webhookCallback('/'));
+bot.telegram.setWebhook(process.env.WEBHOOK_URL);
 
-bot.launch();
+app.listen(process.env.PORT, () => {
+  console.log(`Server listening on port ${process.env.PORT}`);
+});
+
+// bot.launch();
 
