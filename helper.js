@@ -2,7 +2,8 @@ const Extra = require('telegraf/extra');
 const _ = require('lodash');
 const axios = require('axios');
 const querystring = require('querystring');
-const { candidate, catalog, district, serverError } = require('./content');
+const validUrl = require('valid-url');
+const { candidate, catalog, district, events, serverError } = require('./content');
 
 /* ---- Constants ---- */
 const MAX_SHOW_CANDIDATE = 3;
@@ -23,6 +24,10 @@ const getCandidateList = (keyword, isRegion) => {
     const qs = querystring.stringify({ query: keyword });
     return axios.get(`${process.env.DATA_ENDPOINT}/persons/search?${qs}`);
   }
+};
+
+const getCandidateEvents = (personId) => {
+  return axios.get(`${process.env.DATA_ENDPOINT}/persons/${personId}/events`);
 };
 
 const getPoliticalFaction = (faction) => {
@@ -100,19 +105,19 @@ const displayCandidateInfo = (ctx, keyword, isRegion) => {
             _.forEach(list, (item) => {
               const text = getCandidateText(candidate.text, item);
 
-              if (!_.isEmpty(item.socialMedia) && !_.isEmpty(item.introLink)) {
-                const socialMediaLink = item.socialMedia.includes(' ')
-                  ? candidate.facebookSearchLink.replace('#query#', item.name)
-                  : item.socialMedia;
+              let btnlist = [];
+              ctx.reply(text, Extra.markup((m) => {
+                if (!_.isEmpty(item.introLink) && validUrl.isUri(item.introLink)) {
+                  btnlist.push(m.urlButton(candidate.introLinkLabel, item.introLink));
+                }
 
-                ctx.reply(text, Extra.markup((m) =>
-                  m.inlineKeyboard([
-                    m.urlButton(candidate.introLinkLabel, item.introLink),
-                    m.urlButton(candidate.socialMediaLabel, socialMediaLink)
-                  ])));
-              } else {
-                ctx.reply(text);
-              }
+                if (!_.isEmpty(item.socialMedia) && validUrl.isUri(item.socialMedia)) {
+                  btnlist.push(m.urlButton(candidate.socialMediaLabel, item.socialMedia));
+                }
+
+                btnlist.push(m.callbackButton(events.btnLabel, `events-${item.name}_${item.personId}`));
+                return m.inlineKeyboard(_.chunk(btnlist, 2));
+              }));
             });
           }, DISPLAY_TIMEOUT);
         }
@@ -195,8 +200,34 @@ const displayDistrictInfo = (ctx) => {
   return ctx.answerCbQuery(district.loadingText.replace('#district#', ctx.match[1]));
 };
 
+const displayCandidateEvents = async ({ reply, match }) => {
+  let { data = [] } = await getCandidateEvents(match[2]);
+  const text = data.length > 0
+    ? events.numResult.replace('#num#', data.length).replace('#keyword#', match[1])
+    : events.noResult;
+
+  // Filter list to display valid url only
+  data = _.filter(data, (item) => {
+    if (!_.isEmpty(item.url)) {
+      const url = item.url.substring(item.url.indexOf('http'));
+      return validUrl.isUri(url);
+    }
+    return false;
+  });
+
+  reply(text, Extra.markup((m) => {
+    const btnList = _.map(data, (item) => {
+      const url = item.url.substring(item.url.indexOf('http'));
+      return m.urlButton(`[${events.eventType[item.eventType || 'OTHER']}]${item.title}`, url);
+    });
+
+    return m.inlineKeyboard(_.chunk(btnList, 1));
+  }));
+};
+
 module.exports = {
   displayCandidateInfo,
   displayCatalogInfo,
-  displayDistrictInfo
+  displayDistrictInfo,
+  displayCandidateEvents
 };

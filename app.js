@@ -2,11 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
-const { displayCandidateInfo, displayCatalogInfo, displayDistrictInfo } = require('./helper');
+const { displayCandidateInfo, displayCatalogInfo, displayDistrictInfo, displayCandidateEvents } = require('./helper');
 const {
   welcomeMessage,
   catalog,
   district,
+  events,
   report,
   feedback,
   about
@@ -90,6 +91,11 @@ bot.action(/district-(.+)/, (ctx) => {
 bot.action(/region-(.+)/, (ctx) => {
   displayCandidateInfo(ctx, ctx.match[1], true);
   return ctx.answerCbQuery(district.loadingText.replace('#district#', ctx.match[1].split('-')[2]));
+});
+
+bot.action(/events-(.+)_(.+)/,(ctx) => {
+  displayCandidateEvents(ctx);
+  return ctx.answerCbQuery(events.loadingText.replace('#candidate#', ctx.match[1]));
 });
 
 

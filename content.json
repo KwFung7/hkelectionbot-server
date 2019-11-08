@@ -10,7 +10,7 @@
     "buttonLabel": "前往hkfactcheck.io",
     "link": "https://hkfactcheck.io/"
   },
-  "about": "❗所有資料來源自 hkfactcheck.io ，並經過嚴謹FACK CHECKED❗ \n如有任何錯誤，請通過 /feedback功能通知admin \n\n開發者: @KxFxxg \n版本: v1.0.1",
+  "about": "❗所有資料來源自 hkfactcheck.io ，並經過嚴謹FACK CHECKED❗ \n如有任何錯誤，請通過 /feedback功能通知admin \n\n開發者: @KxFxxg \n版本: v1.1.0 \n更新: 查詢相關言論,報道或投票資料功能",
   "candidate": {
     "text": "名稱: #name# #voteNumber# \n地區: #region# \n派系: #politicalFaction# \n報稱政治聯繫: #politicalAffiliation# \n\n背景: #background# \n候選人政綱: #message# \n\n標籤: #tags# \n社交媒體: #socialMedia#\n\n",
     "noData": "沒有提供資料",
@@ -23,8 +23,7 @@
       "PANDEMO": "民主派\uD83D\uDD38",
       "PROESTAB": "建制派\uD83D\uDD39",
       "OTHER": "其他/未清楚"
-    },
-    "facebookSearchLink": "https://www.facebook.com/search/top/?q=#query#"
+    }
   },
   "catalog": {
     "text": "請選擇政黨\uD83D\uDC81\uD83C\uDFFB\u200D♂",
@@ -86,6 +85,18 @@
       "香港島-東區",
       "香港島-南區"
     ]
+  },
+  "events": {
+    "btnLabel": "相關言論,報道或投票資料",
+    "numResult": "搜尋到#num#個符合\"#keyword#\"的相關資料✅",
+    "noResult": "找不到相關資料\uD83D\uDEAB",
+    "loadingText": "下載#candidate#候選人資料中...",
+    "eventType": {
+      "SPEECH": "言論",
+      "MEDIA": "媒體",
+      "VOTE": "投票",
+      "OTHER": "其他"
+    }
   },
   "serverError": "抱歉，伺服器出現錯誤，請稍候再試\uD83D\uDE4F\uD83C\uDFFB"
 }
