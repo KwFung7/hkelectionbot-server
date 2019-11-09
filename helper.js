@@ -202,12 +202,19 @@ const displayDistrictInfo = (ctx) => {
 
 const displayCandidateEvents = async ({ reply, match }) => {
   let { data = [] } = await getCandidateEvents(match[2]);
+
+  // Filter list to display valid url only
+  data = _.filter(data, (item) => {
+    if (!_.isEmpty(item.url)) {
+      const url = item.url.substring(item.url.indexOf('http'));
+      return validUrl.isUri(url);
+    }
+    return false;
+  });
+
   const text = data.length > 0
     ? events.numResult.replace('#num#', data.length).replace('#keyword#', match[1])
     : events.noResult;
-
-  // Filter list to display valid url only
-  data = _.filter(data, item => !_.isEmpty(item.url));
 
   reply(text, Extra.markup((m) => {
     const btnList = _.map(data, (item) => {
