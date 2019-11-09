@@ -207,13 +207,7 @@ const displayCandidateEvents = async ({ reply, match }) => {
     : events.noResult;
 
   // Filter list to display valid url only
-  data = _.filter(data, (item) => {
-    if (!_.isEmpty(item.url)) {
-      const url = item.url.substring(item.url.indexOf('http'));
-      return validUrl.isUri(url);
-    }
-    return false;
-  });
+  data = _.filter(data, item => !_.isEmpty(item.url));
 
   reply(text, Extra.markup((m) => {
     const btnList = _.map(data, (item) => {
