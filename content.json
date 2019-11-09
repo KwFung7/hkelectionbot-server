@@ -91,6 +91,7 @@
     "numResult": "搜尋到#num#個符合\"#keyword#\"的相關資料✅",
     "noResult": "找不到相關資料\uD83D\uDEAB",
     "loadingText": "下載#candidate#候選人資料中...",
+    "eventPath": "https://hkfactcheck.io/person/#personId#/#name#/#eventId#",
     "eventType": {
       "SPEECH": "言論",
       "MEDIA": "媒體",
